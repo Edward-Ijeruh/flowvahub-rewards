@@ -1,6 +1,6 @@
-# Flowvahub Rewards - Frontend Assessment
+# Flowvahub Rewards - Full-stack Assessment
 
-A frontend test project to recreate the **Flowvahub Rewards page**.  
+A full-stack test project to recreate the **Flowvahub Rewards page**.  
 Built with **React (Vite + TypeScript)**, **TailwindCSS**, and **Supabase** for authentication and user profiles.
 
 ---

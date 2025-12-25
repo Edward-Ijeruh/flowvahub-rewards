@@ -10,7 +10,7 @@ export default function Rewards() {
       {/* Top row*/}
       <div className="flex items-center justify-between">
         {/* Title */}
-        <h1 className="text-2xl ml-8 md:ml-0">Rewards Hub</h1>
+        <h1 className="text-2xl ml-10 md:ml-0">Rewards Hub</h1>
 
         {/* Notification bell */}
         <div className="relative">

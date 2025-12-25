@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Zod schema
 const signupSchema = z
@@ -30,6 +31,7 @@ export default function Signup() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = async (data: SignupFormData) => {
     const { data: authData, error } = await supabase.auth.signUp({
@@ -37,19 +39,22 @@ export default function Signup() {
       password: data.password,
     });
 
-    if (error) {
+    if (error && !error.message.includes("confirmation email")) {
       toast.error(error.message);
       return;
     }
 
-    // Insert profile
-    await supabase.from("profiles").insert({
-      id: authData.user?.id,
-      email: data.email,
-      username: data.email.split("@")[0],
-    });
+    // Insert profile if user exists
+    if (authData.user) {
+      await supabase.from("profiles").insert({
+        id: authData.user.id,
+        email: data.email,
+        username: data.email.split("@")[0],
+      });
+    }
 
     toast.success("Account created successfully!");
+    navigate("/login");
   };
 
   return (

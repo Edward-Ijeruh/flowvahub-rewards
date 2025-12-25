@@ -22,7 +22,7 @@ export default function ForgotPassword() {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: "http://localhost:5173/reset-password",
+      redirectTo: `${import.meta.env.VITE_APP_URL}/reset-password`,
     });
 
     if (error) {

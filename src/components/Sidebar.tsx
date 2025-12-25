@@ -2,29 +2,44 @@ import { useState, useEffect, useRef } from "react";
 import { navItems } from "../lib/navItems";
 import { supabase } from "../lib/supabase";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [email, setEmail] = useState<string>("");
+  const navigate = useNavigate();
 
   const firstLetter = email ? email.charAt(0).toUpperCase() : "";
   const username = email ? email.split("@")[0] : "";
 
+  // Get user
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setEmail(data.user.email!);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setEmail(session.user.email!);
+      } else {
+        setEmail("");
+        navigate("/login");
       }
     });
-  }, []);
 
-  // Log out function
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setEmail("");
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     toast.success("Logged out");
+    navigate("/login");
   };
 
   // Close dropdown on clicking outside
@@ -48,7 +63,7 @@ export default function Sidebar() {
       {/* Mobile harmburger */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-40 text-2xl font-bold"
+        className="md:hidden fixed top-4 left-4 z-40 text-2xl font-bold bg-white px-2 rounded-lg"
       >
         ☰
       </button>

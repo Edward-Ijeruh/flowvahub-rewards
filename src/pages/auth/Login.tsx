@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
 // Zod schema
 const loginSchema = z.object({
@@ -15,6 +16,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -24,7 +27,7 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const { data: authData, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
@@ -34,17 +37,9 @@ export default function Login() {
       return;
     }
 
-    const user = authData.user;
-
-    if (!user?.email_confirmed_at) {
-      toast.error("Please verify your email before logging in");
-      await supabase.auth.signOut();
-      return;
-    }
-
     toast.success("Logged in successfully");
+    navigate("/");
   };
-
   return (
     <div className="min-h-screen p-4 flex items-center justify-center bg-gradient-to-b from-[#8c16f9] to-[#7424e0]">
       <div className="bg-white w-full max-w-sm rounded-2xl p-8 shadow-xl">
